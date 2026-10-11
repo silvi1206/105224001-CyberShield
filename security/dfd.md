@@ -1,24 +1,29 @@
 # Data Flow Diagram CyberShield
 
-## DFD Awal
+## DFD Pekan 3
 
 ```mermaid
 flowchart LR
-    U[External Entity: Pengguna]
 
-    P1[Process: Input & Validasi URL]
-    P2[Process: Analisis Risiko URL]
-    P3[Process: Generate Hasil Analisis]
+    subgraph TB1["Trust Boundary TB-01: User Device / Browser"]
+        E01[External Entity E01: Pengguna]
+    end
 
-    D1[(Data Store: Aturan Deteksi)]
-    D2[(Data Store: Mock/Sample URL)]
+    subgraph TB2["Trust Boundary TB-02: CyberShield Application"]
+        P01[Process P01: Input & Validasi URL]
+        P02[Process P02: Analisis Risiko URL]
+        P03[Process P03: Generate Hasil Analisis]
 
-    U -->|URL yang akan dianalisis| P1
-    P1 -->|URL valid| P2
-    P1 -->|Pesan validasi| U
+        D01[(Data Store D01: Aturan Deteksi)]
+        D02[(Data Store D02: Mock/Sample URL)]
+    end
 
-    D1 -->|Aturan HTTPS, TLD, keyword, extension| P2
-    D2 -->|Contoh URL| P1
+    E01 -->|F01: URL yang akan dianalisis| P01
+    P01 -->|F02: Pesan validasi| E01
+    P01 -->|F03: URL valid| P02
 
-    P2 -->|Indikator risiko & risk score| P3
-    P3 -->|Hasil analisis & rekomendasi| U
+    D01 -->|F04: Aturan HTTPS, TLD, keyword, extension| P02
+    D02 -->|F05: Contoh URL| P01
+
+    P02 -->|F06: Indikator risiko & risk score| P03
+    P03 -->|F07: Hasil analisis & rekomendasi| E01

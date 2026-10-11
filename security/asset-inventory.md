@@ -2,52 +2,52 @@
 
 ## 1. Data
 
-| Aset | C | I | A | Alasan |
-|---|---:|---:|---:|---|
-| URL yang dianalisis | 2 | 3 | 2 | URL dapat mengandung informasi sensitif dan hasil analisis harus tetap akurat. |
-| Hasil analisis URL | 2 | 3 | 2 | Hasil analisis menjadi dasar rekomendasi keamanan sehingga integritasnya penting. |
-| Aturan deteksi URL | 2 | 3 | 2 | Perubahan aturan dapat memengaruhi hasil deteksi sehingga harus dijaga integritasnya. |
-| Mock/sample URL | 1 | 2 | 2 | Data digunakan untuk demonstrasi dan pengujian sehingga dampak kebocorannya rendah. |
+| ID | Aset | C | I | A | Status | Alasan |
+|---|---|---:|---:|---:|---|---|
+| A01 | URL yang dianalisis | 2 | 3 | 2 | Aktif | URL merupakan input utama CyberShield dan dapat mengandung informasi sensitif, sementara integritasnya penting agar analisis tidak berubah. |
+| A02 | Hasil analisis URL | 2 | 3 | 2 | Aktif | Hasil analisis menjadi dasar rekomendasi keamanan sehingga perubahan atau manipulasi hasil dapat menyesatkan pengguna. |
+| A03 | Aturan deteksi URL | 2 | 3 | 2 | Aktif | Aturan deteksi menentukan hasil analisis sehingga perubahan tidak sah dapat menyebabkan penilaian risiko yang salah. |
+| A04 | Mock/sample URL | 1 | 2 | 2 | Aktif | Data digunakan untuk demonstrasi dan pengujian fitur sehingga dampak kebocorannya relatif rendah. |
 
 ## 2. Layanan
 
-| Aset | C | I | A | Alasan |
-|---|---:|---:|---:|---|
-| Halaman analisis URL | 1 | 3 | 3 | Layanan utama CyberShield harus tersedia dan memberikan hasil analisis yang benar. |
-| Mesin analisis URL | 1 | 3 | 3 | Kesalahan atau perubahan proses analisis dapat menghasilkan penilaian risiko yang tidak tepat. |
-| Website CyberShield | 1 | 3 | 3 | Website merupakan antarmuka utama yang digunakan pengguna untuk mengakses layanan. |
+| ID | Aset | C | I | A | Status | Alasan |
+|---|---|---:|---:|---:|---|---|
+| A05 | Halaman analisis URL | 1 | 3 | 3 | Aktif | Halaman ini merupakan fungsi utama CyberShield dan harus tersedia serta menampilkan proses analisis dengan benar. |
+| A06 | Mesin analisis URL | 1 | 3 | 3 | Aktif | Mesin analisis menentukan indikator dan risk score sehingga integritas proses sangat penting terhadap keakuratan hasil. |
+| A07 | Website CyberShield | 1 | 3 | 3 | Aktif | Website merupakan antarmuka utama yang digunakan pengguna untuk mengakses fungsi CyberShield. |
 
 ## 3. Secrets
 
-| Aset | C | I | A | Alasan |
-|---|---:|---:|---:|---|
-| Secret/API key | 3 | 3 | 2 | Jika integrasi eksternal ditambahkan, API key harus dirahasiakan dan tidak boleh dimanipulasi. |
+| ID | Aset | C | I | A | Status | Alasan |
+|---|---|---:|---:|---:|---|---|
+| A08 | Secret/API key | 3 | 3 | 2 | Rencana | Jika integrasi layanan eksternal ditambahkan, API key harus dijaga kerahasiaan dan integritasnya agar tidak disalahgunakan. |
 
-> Catatan: Pada versi prototype v0.1 belum terdapat API key atau secret eksternal yang digunakan.
+> Pada prototype v0.1 belum terdapat API key atau secret eksternal yang digunakan.
 
 ## 4. Backup
 
-| Aset | C | I | A | Alasan |
-|---|---:|---:|---:|---|
-| Backup source code | 2 | 3 | 2 | Source code perlu dijaga agar dapat dipulihkan jika terjadi kehilangan atau perubahan yang tidak diinginkan. |
-| Backup konfigurasi aplikasi | 2 | 3 | 2 | Konfigurasi diperlukan untuk memulihkan aplikasi ke kondisi yang benar. |
+| ID | Aset | C | I | A | Status | Alasan |
+|---|---|---:|---:|---:|---|---|
+| A09 | Backup source code | 2 | 3 | 2 | Aktif | Source code perlu tersedia untuk pemulihan apabila terjadi kehilangan atau perubahan yang tidak diinginkan. |
+| A10 | Backup konfigurasi aplikasi | 2 | 3 | 2 | Rencana | Backup konfigurasi diperlukan agar aplikasi dapat dipulihkan ke konfigurasi yang benar pada pengembangan berikutnya. |
 
 ## 5. Log
 
-| Aset | C | I | A | Alasan |
-|---|---:|---:|---:|---|
-| Log aktivitas analisis | 2 | 3 | 2 | Log dapat digunakan untuk audit dan harus tetap akurat serta tidak dimanipulasi. |
-| Log error aplikasi | 1 | 3 | 2 | Log error membantu proses debugging dan pemeliharaan aplikasi. |
+| ID | Aset | C | I | A | Status | Alasan |
+|---|---|---:|---:|---:|---|---|
+| A11 | Log aktivitas analisis | 2 | 3 | 2 | Rencana | Log dapat digunakan untuk audit aktivitas analisis dan harus terlindungi dari perubahan yang tidak sah. |
+| A12 | Log error aplikasi | 1 | 3 | 2 | Rencana | Log error dapat membantu debugging dan pemeliharaan aplikasi ketika mekanisme logging diterapkan. |
 
-> Catatan: Logging terpusat belum diimplementasikan pada prototype v0.1.
+> Logging terpusat belum diimplementasikan pada prototype v0.1.
 
 ## 6. Akun Admin
 
-| Aset | C | I | A | Alasan |
-|---|---:|---:|---:|---|
-| Akun admin | 3 | 3 | 2 | Akun admin berpotensi memiliki hak pengelolaan sistem sehingga kredensial dan aksesnya harus dilindungi. |
+| ID | Aset | C | I | A | Status | Alasan |
+|---|---|---:|---:|---:|---|---|
+| A13 | Akun admin | 3 | 3 | 2 | Rencana | Akun admin pada pengembangan berikutnya dapat memiliki hak pengelolaan sistem sehingga kredensial dan aksesnya perlu dilindungi. |
 
-> Catatan: Fitur akun admin belum diimplementasikan pada prototype v0.1 dan dicatat sebagai aset yang perlu dipertimbangkan pada pengembangan berikutnya.
+> Fitur akun admin belum diimplementasikan pada prototype v0.1.
 
 ## Rating
 
@@ -66,11 +66,13 @@
 
 ## Mekanisme Kriptografi
 
-Pada prototype CyberShield v0.1 belum terdapat penyimpanan password maupun komunikasi dengan backend yang menggunakan mekanisme kriptografi secara eksplisit.
+Pada prototype CyberShield v0.1 belum terdapat backend, database, penyimpanan password, atau mekanisme kriptografi aplikasi yang diimplementasikan secara khusus.
 
-Data yang perlu dilindungi dengan kriptografi pada pengembangan berikutnya antara lain:
+Aset yang perlu dilindungi menggunakan mekanisme kriptografi pada pengembangan berikutnya:
 
-- Password akun admin → disimpan menggunakan **password hashing**, bukan plaintext.
-- Secret/API key → disimpan secara aman dan tidak dimasukkan ke source code.
-- Data sensitif yang disimpan → dapat menggunakan **enkripsi**.
-- Data atau catatan penting yang perlu dibuktikan keasliannya → dapat menggunakan **digital signature/message authentication**.
+- **A13 Akun admin:** password disimpan menggunakan **password hashing**, bukan plaintext.
+- **A08 Secret/API key:** secret harus disimpan secara aman dan tidak ditanamkan langsung dalam source code.
+- **Data sensitif yang disimpan:** dapat menggunakan **enkripsi** sesuai kebutuhan.
+- **Catatan penting atau data yang membutuhkan pembuktian keaslian:** dapat menggunakan **digital signature** atau **message authentication**.
+
+Pada DFD, aset yang **sudah dilindungi kriptografi** harus dibedakan dari aset yang **baru direncanakan untuk dilindungi**. Pada v0.1 tidak ada aset data aplikasi yang menggunakan mekanisme kriptografi khusus.
