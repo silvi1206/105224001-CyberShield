@@ -2,11 +2,21 @@ import type { AnalysisResult as AnalysisResultType } from "@/types/analysis";
 import RiskScore from "./RiskScore";
 import SecurityIndicator from "./SecurityIndicator";
 
-interface AnalysisResultProps {
-  result: AnalysisResultType;
+interface CryptoResult {
+  fingerprint: string;
+  hmac: string;
+  verified: boolean;
 }
 
-export default function AnalysisResult({ result }: AnalysisResultProps) {
+interface AnalysisResultProps {
+  result: AnalysisResultType;
+  cryptoResult: CryptoResult | null;
+}
+
+export default function AnalysisResult({
+  result,
+  cryptoResult,
+}: AnalysisResultProps) {
   return (
     <div
       className={`p-5 sm:p-6 rounded-2xl border-2 transition-all ${
@@ -22,12 +32,15 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
         <div className="flex items-center gap-3">
           <div
             className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-sm ${
-              result.isSafe ? "bg-emerald-500 text-white" : "bg-rose-500 text-white"
+              result.isSafe
+                ? "bg-emerald-500 text-white"
+                : "bg-rose-500 text-white"
             }`}
             aria-hidden="true"
           >
             {result.isSafe ? "✓" : "⚠"}
           </div>
+
           <div>
             <div className="flex items-center gap-2">
               <h3
@@ -39,10 +52,12 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
                   ? "Tautan Terindikasi Aman"
                   : "Peringatan: Tautan Mencurigakan!"}
               </h3>
+
               <span className="text-[10px] font-bold text-pink-700 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-200 hidden sm:inline-block">
                 Evaluasi CyberShield
               </span>
             </div>
+
             <p className="text-xs font-mono text-slate-600 break-all mt-0.5">
               {result.url}
             </p>
@@ -60,12 +75,16 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
           isAlert={!result.protocol.isHttps}
           detail={result.protocol.detail}
         />
+
         <SecurityIndicator
           title="Reputasi Domain"
-          status={result.domainCheck.isSuspicious ? "Mencurigakan" : "Standar"}
+          status={
+            result.domainCheck.isSuspicious ? "Mencurigakan" : "Standar"
+          }
           isAlert={result.domainCheck.isSuspicious}
           detail={result.domainCheck.detail}
         />
+
         <SecurityIndicator
           title="Rekayasa Sosial"
           status={result.keywordCheck.isTriggered ? "Terdeteksi" : "Nihil"}
@@ -76,9 +95,12 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
               : "Tidak ditemukan kata umpan hadiah atau pemaksaan verifikasi."
           }
         />
+
         <SecurityIndicator
           title="Muatan Berkas"
-          status={result.extensionCheck.isDangerous ? "Bahaya" : "Bersih"}
+          status={
+            result.extensionCheck.isDangerous ? "Bahaya" : "Bersih"
+          }
           isAlert={result.extensionCheck.isDangerous}
           detail={
             result.extensionCheck.isDangerous
@@ -87,6 +109,57 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
           }
         />
       </div>
+
+      {/* Cryptographic Integrity */}
+      {cryptoResult && (
+        <div className="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">
+                Integritas Kriptografi
+              </h4>
+
+              <p className="text-xs text-slate-500 mt-0.5">
+                Fingerprint URL dan verifikasi hasil analisis
+              </p>
+            </div>
+
+            <span
+              className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                cryptoResult.verified
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {cryptoResult.verified
+                ? "✓ HMAC Terverifikasi"
+                : "✕ Verifikasi Gagal"}
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <p className="text-xs font-semibold text-slate-600 mb-1">
+                SHA-256 URL Fingerprint
+              </p>
+
+              <code className="block text-[11px] sm:text-xs font-mono text-slate-700 bg-white border border-slate-200 rounded-lg p-2 break-all">
+                {cryptoResult.fingerprint}
+              </code>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-slate-600 mb-1">
+                HMAC-SHA-256
+              </p>
+
+              <code className="block text-[11px] sm:text-xs font-mono text-slate-700 bg-white border border-slate-200 rounded-lg p-2 break-all">
+                {cryptoResult.hmac}
+              </code>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Recommendation */}
       <div
@@ -99,10 +172,12 @@ export default function AnalysisResult({ result }: AnalysisResultProps) {
         <span className="text-lg shrink-0" aria-hidden="true">
           💡
         </span>
+
         <div className="text-sm text-slate-800">
           <span className="font-bold text-slate-900 block mb-0.5">
             Rekomendasi Tindakan:
           </span>
+
           {result.recommendation}
         </div>
       </div>

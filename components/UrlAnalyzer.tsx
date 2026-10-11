@@ -1,37 +1,88 @@
 "use client";
 
-import { useState, useId } from "react";
+import { useRef, useState, useId } from "react";
 import type { AnalysisResult as AnalysisResultType } from "@/types/analysis";
 import { analyzeUrl, validateUrl, SAMPLE_URLS } from "@/lib/url-analyzer";
+import { sha256 } from "@/lib/crypto/hash";
+import {
+  createHmac,
+  generateHmacKey,
+  verifyHmac,
+} from "@/lib/crypto/hmac";
 import AnalysisResult from "./AnalysisResult";
 import SampleUrl from "./SampleUrl";
+
+interface CryptoResult {
+  fingerprint: string;
+  hmac: string;
+  verified: boolean;
+}
 
 export default function UrlAnalyzer() {
   const [inputUrl, setInputUrl] = useState("");
   const [result, setResult] = useState<AnalysisResultType | null>(null);
+  const [cryptoResult, setCryptoResult] = useState<CryptoResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const urlInputId = useId();
   const errorId = useId();
 
+  // Kunci HMAC hanya dibuat selama runtime dan tidak disimpan di repository.
+  const hmacKeyRef = useRef<CryptoKey | null>(null);
+
+  const getHmacKey = async () => {
+    if (!hmacKeyRef.current) {
+      hmacKeyRef.current = await generateHmacKey();
+    }
+
+    return hmacKeyRef.current;
+  };
+
+  const performAnalysis = async (url: string) => {
+    const analysisResult = analyzeUrl(url);
+
+    const fingerprint = await sha256(url);
+
+    const key = await getHmacKey();
+
+    const resultData = JSON.stringify({
+      url: analysisResult.url,
+      riskScore: analysisResult.riskScore,
+      isSafe: analysisResult.isSafe,
+      recommendation: analysisResult.recommendation,
+    });
+
+    const hmac = await createHmac(resultData, key);
+    const verified = await verifyHmac(resultData, hmac, key);
+
+    setResult(analysisResult);
+    setCryptoResult({
+      fingerprint,
+      hmac,
+      verified,
+    });
+
+    setIsAnalyzing(false);
+  };
+
   const handleAnalyze = () => {
     const validationError = validateUrl(inputUrl);
+
     if (validationError) {
       setError(validationError);
       setResult(null);
+      setCryptoResult(null);
       return;
     }
 
     setError(null);
     setIsAnalyzing(true);
     setResult(null);
+    setCryptoResult(null);
 
-    // Simulate processing delay for UX
     setTimeout(() => {
-      const analysisResult = analyzeUrl(inputUrl);
-      setResult(analysisResult);
-      setIsAnalyzing(false);
+      void performAnalysis(inputUrl);
     }, 600);
   };
 
@@ -40,11 +91,10 @@ export default function UrlAnalyzer() {
     setError(null);
     setIsAnalyzing(true);
     setResult(null);
+    setCryptoResult(null);
 
     setTimeout(() => {
-      const analysisResult = analyzeUrl(url);
-      setResult(analysisResult);
-      setIsAnalyzing(false);
+      void performAnalysis(url);
     }, 600);
   };
 
@@ -65,6 +115,7 @@ export default function UrlAnalyzer() {
             >
               Masukkan URL yang ingin dianalisis
             </label>
+
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1">
                 <input
@@ -84,6 +135,7 @@ export default function UrlAnalyzer() {
                       : "border-pink-200/80 bg-white focus:border-pink-500 focus:ring-pink-200"
                   }`}
                 />
+
                 {error && (
                   <p
                     id={errorId}
@@ -194,6 +246,7 @@ export default function UrlAnalyzer() {
                 d="M4 12a8 8 0 018-8v8H4z"
               />
             </svg>
+
             <span className="text-sm font-semibold text-slate-700">
               Menganalisis parameter keamanan URL...
             </span>
@@ -202,7 +255,12 @@ export default function UrlAnalyzer() {
       )}
 
       {/* Result */}
-      {result && !isAnalyzing && <AnalysisResult result={result} />}
+      {result && !isAnalyzing && (
+        <AnalysisResult
+          result={result}
+          cryptoResult={cryptoResult}
+        />
+      )}
     </div>
   );
 }

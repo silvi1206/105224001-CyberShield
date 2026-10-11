@@ -1,76 +1,154 @@
-# AI Log
+# AI_LOG
 
-## Penggunaan AI pada Pekan 3
+## Penggunaan AI
 
-AI digunakan sebagai alat bantu selama proses analisis keamanan CyberShield. Penggunaan AI difokuskan pada membantu menyusun dan meninjau dokumentasi, bukan sebagai pengganti keputusan akhir dalam analisis keamanan.
+Pengembangan komponen kriptografi CyberShield menggunakan AI sebagai alat bantu selama proses perancangan, implementasi, pengujian, dan dokumentasi.
 
-### 1. Asset Inventory
+AI digunakan sebagai pendamping pengembangan, sedangkan keputusan akhir mengenai desain, kode, pengujian, dan kesesuaian dengan kondisi produk diperiksa dan ditentukan oleh pengembang.
 
-AI membantu:
-- meninjau daftar aset CyberShield;
-- mengelompokkan aset berdasarkan data, layanan, secrets, backup, log, dan akun admin;
-- memberikan saran pemberian ID aset;
-- membantu memberikan penilaian CIA (Confidentiality, Integrity, Availability);
-- membedakan aset yang sudah aktif pada prototype v0.1 dengan aset yang masih berupa rencana pengembangan.
+---
 
-Hasil akhir disesuaikan dengan kondisi CyberShield v0.1.
+## 1. Perancangan Kebutuhan Kriptografi
 
-### 2. Data Flow Diagram (DFD)
+AI digunakan untuk membantu mengidentifikasi data pada CyberShield yang memiliki kebutuhan keamanan dan menentukan primitive kriptografi yang sesuai.
 
-AI membantu:
-- menyusun identitas elemen DFD;
-- memberikan ID untuk external entity, process, data store, dan data flow;
-- membantu menambahkan trust boundary;
-- mengidentifikasi aliran data yang perlu diperhatikan dari sisi keamanan;
-- membantu menandai status perlindungan kriptografi pada data.
+Data yang dianalisis meliputi:
 
-DFD akhir disesuaikan dengan arsitektur CyberShield yang berjalan pada prototype v0.1.
+- URL yang dianalisis.
+- Hasil analisis URL.
+- Detection rules.
 
-### 3. Threat Modeling
+Dari analisis tersebut digunakan:
 
-AI membantu mengidentifikasi threat menggunakan metode STRIDE.
+- SHA-256 untuk fingerprint URL.
+- HMAC-SHA-256 untuk membantu mendeteksi perubahan pada hasil analisis.
 
-Threat yang dianalisis kemudian dikaitkan dengan:
-- elemen DFD;
-- data flow;
-- aset yang terdampak;
-- kategori STRIDE.
+Keputusan akhir disesuaikan dengan kondisi CyberShield yang masih berupa prototype client-side.
 
-AI juga membantu menyusun alasan setiap threat berdasarkan kondisi CyberShield v0.1, seperti penggunaan client-side analysis dan belum adanya backend, autentikasi, serta centralized logging.
+---
 
-### 4. Risk Assessment
+## 2. Perancangan Komponen
 
-AI membantu:
-- menentukan skala likelihood dan impact;
-- menghitung risk score menggunakan rumus:
+AI digunakan untuk membantu menyusun rancangan:
 
-`Risk Score = Likelihood × Impact`
+```text
+URL
+ |
+ v
+TextEncoder
+ |
+ v
+SHA-256
+ |
+ v
+Hexadecimal fingerprint
+```
 
-- menyusun alasan likelihood dan impact berdasarkan kondisi prototype;
-- membantu memilih lima risiko prioritas.
+dan:
 
-Penilaian akhir tetap mempertimbangkan karakteristik dan kondisi aktual CyberShield v0.1.
+```text
+Analysis Result
+      +
+Runtime HMAC Key
+      |
+      v
+ HMAC-SHA-256
+      |
+      v
+Authentication Tag
+```
 
-### 5. Security Control Plan
+AI juga membantu menjelaskan representasi data pada setiap tahap pemrosesan.
 
-AI membantu menyusun rencana kontrol untuk lima risiko prioritas.
+---
 
-Kontrol yang direncanakan antara lain:
-- server-side validation;
-- server-side analysis;
-- server-side detection rules;
-- access control;
-- HTTPS;
-- data minimization.
+## 3. Implementasi
 
-Kontrol tersebut merupakan rencana pengembangan dan **belum seluruhnya diimplementasikan pada CyberShield v0.1**.
+AI digunakan sebagai bantuan dalam penulisan dan pemeriksaan implementasi TypeScript untuk:
 
-## Batasan Penggunaan AI
+- SHA-256 menggunakan Web Crypto API (`lib/crypto/hash.ts`).
+- HMAC-SHA-256 menggunakan Web Crypto API (`lib/crypto/hmac.ts`).
+- Runtime generation untuk HMAC key (`generateHmacKey()`).
+- Konversi hasil binary menjadi hexadecimal (`bytesToHex()`).
 
-AI digunakan sebagai alat bantu brainstorming, penyusunan struktur dokumentasi, dan review keamanan. Keputusan mengenai aset, threat, tingkat risiko, prioritas, serta kontrol disesuaikan dengan kondisi aktual produk.
+Implementasi tetap diperiksa menggunakan TypeScript compiler dan automated testing.
 
-AI tidak digunakan untuk mengklaim bahwa fitur keamanan yang belum diimplementasikan sudah tersedia pada CyberShield v0.1.
+---
 
-## Kesimpulan
+## 4. Pengujian
 
-Penggunaan AI membantu mempercepat proses penyusunan threat model, risk register, dan security control plan. Hasil akhir tetap ditinjau dan disesuaikan agar merepresentasikan kondisi aktual CyberShield pada Pekan 3.
+AI digunakan untuk membantu menyusun skenario automated test pada `lib/crypto/test/hash.test.ts` dan `lib/crypto/test/hmac.test.ts`.
+
+Pengujian mencakup:
+
+### SHA-256
+
+1. Validasi panjang hash (64 karakter hexadecimal).
+2. Konsistensi hash untuk input yang sama.
+3. Perbedaan hash untuk input yang berbeda.
+4. Boundary test menggunakan input kosong.
+
+### HMAC-SHA-256
+
+1. Validasi panjang HMAC (64 karakter hexadecimal).
+2. Verifikasi data yang tidak berubah (valid).
+3. Penolakan data yang telah dimanipulasi (invalid).
+4. Penolakan authentication tag yang salah.
+
+Hasil pengujian diperiksa secara langsung menggunakan Vitest.
+
+Hasil terakhir:
+
+```text
+Test Files  2 passed (2)
+Tests       8 passed (8)
+```
+
+---
+
+## 5. Dokumentasi
+
+AI digunakan untuk membantu menyusun dokumentasi pada `README.md`, termasuk:
+
+- Kebutuhan kriptografi;
+- Rancangan komponen;
+- Representasi data;
+- Sumber keacakan;
+- Cara menjalankan;
+- Hasil pengujian;
+- Batasan prototype.
+
+Dokumentasi disesuaikan dengan implementasi aktual pada repository.
+
+---
+
+## 6. Batasan Penggunaan AI
+
+AI tidak digunakan untuk memasukkan secret, password, token, private key, atau data pribadi ke dalam repository.
+
+Secret key HMAC tidak ditulis secara hardcode dan dibuat pada saat runtime.
+
+AI juga tidak digunakan sebagai pengganti proses pengujian. Kode tetap diperiksa menggunakan:
+
+```bash
+npx tsc --noEmit
+npm test # atau npx vitest run
+npm run lint
+npm run build
+```
+
+Keputusan akhir mengenai implementasi dan dokumentasi dilakukan berdasarkan kondisi aktual repository CyberShield.
+
+---
+
+## 7. Ringkasan
+
+AI digunakan sebagai alat bantu untuk:
+
+- Analisis kebutuhan;
+- Desain komponen;
+- Implementasi kode;
+- Penyusunan test;
+- Dokumentasi.
+
+Validasi akhir dilakukan melalui pemeriksaan kode dan automated test pada repository.
